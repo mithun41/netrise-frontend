@@ -1,0 +1,21 @@
+# NetRise Frontend Rules
+
+Read and follow all instructions defined in `AGENTS.md`.
+
+Key rules:
+1. JavaScript only (no TypeScript / no .ts or .tsx).
+2. Framework: Next.js 16 App Router + Tailwind CSS v4 + Zustand.
+3. Every table MUST use the standardized `DataTable` component from `@/components/common/table` with `useDataTable` hook from `@/hooks/useDataTable` to maintain 100% design consistency and fast loading.
+4. Maintain clean folder structure:
+   - `src/app/` (Next.js App router)
+   - `src/components/common/` (Generic UI primitives like Button, Card, Input, Modal, Badge, ActionMenu)
+   - `src/components/common/table/` (Unified DataTable system)
+   - `src/components/layout/` (Navbar, Footer, Sidebar)
+   - `src/components/modules/` (Feature sections)
+   - `src/store/` (Zustand stores)
+   - `src/hooks/` (Custom hooks)
+   - `src/lib/` (utils and constants)
+   - `src/services/` (API clients)
+5. Use `@/*` import alias from `jsconfig.json`.
+6. Always ensure `npm run lint` and `npm run build` pass with 0 errors.
+
