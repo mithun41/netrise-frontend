@@ -106,7 +106,7 @@ export default function OrderInvoiceModal({ isOpen, onClose, order }) {
           <div className="no-print flex shrink-0 items-center justify-between px-5 py-3.5 bg-gray-50 dark:bg-zinc-800/90 border-b border-gray-200 dark:border-zinc-800 z-20">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-900 dark:text-white">
               <Package className="h-4 w-4 text-emerald-600" />
-              <span>Official Commercial Order Invoice (অফিসিয়াল চালান ও রশিদ)</span>
+              <span>Official Commercial Order Invoice</span>
             </div>
             <button
               onClick={onClose}
@@ -255,11 +255,11 @@ export default function OrderInvoiceModal({ isOpen, onClose, order }) {
                       <th className="py-2.5 px-3">#</th>
                       <th className="py-2.5 px-3">Item Description</th>
                       <th className="py-2.5 px-3 font-mono">SKU</th>
-                      <th className="py-2.5 px-3 text-right">Unit DP</th>
-                      <th className="py-2.5 px-3 text-right">PV</th>
+                      <th className="py-2.5 px-3 text-right">Unit Price</th>
+                      <th className="py-2.5 px-3 text-right">Unit Profit</th>
                       <th className="py-2.5 px-3 text-center">Qty</th>
-                      <th className="py-2.5 px-3 text-right">Total DP</th>
-                      <th className="py-2.5 px-3 text-right">Total PV</th>
+                      <th className="py-2.5 px-3 text-right">Total Amount</th>
+                      <th className="py-2.5 px-3 text-right">Total Profit</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 text-gray-800">
@@ -311,9 +311,9 @@ export default function OrderInvoiceModal({ isOpen, onClose, order }) {
                     </span>
                   </div>
                   <div className="text-xs font-semibold text-emerald-800">
-                    Total Business Volume (PV):{" "}
+                    Total Commission Profit:{" "}
                     <span className="font-mono font-black text-emerald-700">
-                      ৳{Number(order.total_pv || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      ৳{Number(order.total_profit !== undefined ? order.total_profit : (order.total_pv || 0)).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </span>
                   </div>
                   {order.commission_reference && (
@@ -325,7 +325,7 @@ export default function OrderInvoiceModal({ isOpen, onClose, order }) {
 
                 <div className="text-right w-full sm:w-auto border-t sm:border-t-0 pt-2 sm:pt-0">
                   <span className="text-[11px] text-gray-500 uppercase font-black tracking-wider block">
-                    Total Payable / Paid (DP)
+                    Total Payable / Paid Amount
                   </span>
                   <div className="text-2xl font-black text-gray-900 font-mono">
                     ৳{Number(order.total_amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}

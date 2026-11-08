@@ -149,7 +149,7 @@ function UserForm({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? `Edit User (@${targetUser.username})` : "Add New User Account (নতুন ইউজার)"}
+      title={isEdit ? `Edit User (@${targetUser.username})` : "Add New User Account"}
       className="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
@@ -178,7 +178,7 @@ function UserForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                Username (ইউজারনেম) *
+                Username *
               </label>
               <Input
                 type="text"
@@ -192,7 +192,7 @@ function UserForm({
 
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                {isEdit ? "New Password (পরিবর্তন করতে চাইলে লিখুন)" : "Password *"}
+                {isEdit ? "New Password (leave blank to keep unchanged)" : "Password *"}
               </label>
               <Input
                 type="password"
@@ -247,7 +247,7 @@ function UserForm({
             </div>
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                Phone Number (মোবাইল)
+                Phone Number
               </label>
               <Input
                 type="tel"
@@ -269,7 +269,7 @@ function UserForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                System Role (ব্যবহারকারীর ধরণ)
+                System Role
               </label>
               <select
                 value={userType}
@@ -286,7 +286,7 @@ function UserForm({
 
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                MLM Network Rank (বর্তমান পদবী)
+                MLM Network Rank
               </label>
               <select
                 value={rank}
@@ -317,7 +317,7 @@ function UserForm({
                     : "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-600"
                 }`}
               >
-                <span>{isStaff ? "Staff Admin (হ্যাঁ)" : "Regular User (না)"}</span>
+                <span>{isStaff ? "Staff Admin" : "Regular User"}</span>
                 {isStaff ? <ToggleRight className="h-4 w-4 text-purple-600" /> : <ToggleLeft className="h-4 w-4 text-gray-400" />}
               </button>
             </div>
@@ -335,7 +335,7 @@ function UserForm({
                     : "border-rose-300 bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200 font-bold"
                 }`}
               >
-                <span>{isActive ? "Active (সক্রিয়)" : "Suspended (বন্ধ)"}</span>
+                <span>{isActive ? "Active" : "Suspended"}</span>
                 {isActive ? <ToggleRight className="h-4 w-4 text-emerald-600" /> : <ToggleLeft className="h-4 w-4 text-rose-500" />}
               </button>
             </div>
@@ -360,7 +360,7 @@ function UserForm({
             className="bg-[#F7A600] hover:bg-[#e69b00] text-black font-bold flex items-center gap-1.5"
           >
             {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            <span>{isEdit ? "Update User (আপডেট করুন)" : "Create User (সংরক্ষণ করুন)"}</span>
+            <span>{isEdit ? "Update User" : "Create User"}</span>
           </Button>
         </div>
       </form>

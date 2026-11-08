@@ -120,7 +120,7 @@ export default function AdminSecureLifePage() {
 
   return (
     <AdminOnly>
-      <PageShell title="Secure Life (সুরক্ষিত জীবন)" description="Agents, policies, commission rates and requests.">
+      <PageShell title="Secure Life" description="Agents, policies, commission rates and requests.">
         <ErrorNote message={error || actionError} />
         <div className="space-y-2">
           <SectionTitle>Commission Requests</SectionTitle>

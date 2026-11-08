@@ -204,7 +204,7 @@ export default function AdminRanksPage() {
   return (
     <AdminOnly>
       <PageShell
-        title="Rank & Incentive Rules (র‍্যাঙ্ক ও প্রণোদনা কনসোল)"
+        title="Rank & Incentive Rules"
         description="Configure rank promotion targets, allocate the 5% company incentive pool across leadership tiers, and execute automated payout cycles."
         actions={
           <div className="flex flex-wrap items-center gap-2">
@@ -344,7 +344,7 @@ export default function AdminRanksPage() {
               className="h-8 text-xs bg-purple-700 hover:bg-purple-800 text-white font-semibold flex items-center gap-1.5 shadow-2xs"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>{isApplyingPreset ? "Applying..." : "Apply Standard 100% Preset (স্ট্যান্ডার্ড বণ্টন)"}</span>
+              <span>{isApplyingPreset ? "Applying..." : "Apply Standard 100% Preset"}</span>
             </Button>
           </div>
 
@@ -357,7 +357,7 @@ export default function AdminRanksPage() {
             <div>
               <h3 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Coins className="h-4 w-4 text-purple-600" />
-                <span>Execute Incentive Payout (প্রণোদনা বণ্টন পরিচালনা)</span>
+                <span>Execute Incentive Payout</span>
               </h3>
               <p className="text-xs text-gray-500 mt-0.5">
                 Calculates each rank's allocated percentage from the waiting pool ({formatTaka(poolAmount)}) and credits qualified members' wallets instantly.
@@ -375,7 +375,7 @@ export default function AdminRanksPage() {
               }`}
             >
               <Coins className="h-4 w-4" />
-              <span>{isPayingIncentive ? "Processing Payout..." : "Pay Incentive Now (এখনই পে-আউট করুন)"}</span>
+              <span>{isPayingIncentive ? "Processing Payout..." : "Pay Incentive Now"}</span>
             </Button>
           </div>
 
@@ -383,9 +383,9 @@ export default function AdminRanksPage() {
             <div className="p-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5">
               <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <span className="font-bold">ইনসেনটিভ বণ্টন চালুর পূর্বে র‍্যাঙ্ক শেয়ার নির্ধারণ আবশ্যক:</span>
+                <span className="font-bold">Rank share configuration required before payout:</span>
                 <p>
-                  বর্তমানে কোনো সক্রিয় র‍্যাঙ্কে ইনসেনটিভ পারসেন্টেজ নির্ধারণ করা নেই। পে-আউট সম্পন্ন করতে উপরের <strong>&quot;Apply Standard 100% Preset&quot;</strong> বাটনে ক্লিক করে স্বয়ংক্রিয়ভাবে ১০০% বণ্টন কার্যকর করুন অথবা টেবিলে থাকা র‍্যাঙ্কগুলো এডিট করুন।
+                  No active ranks currently have an incentive percentage set. Click <strong>&quot;Apply Standard 100% Preset&quot;</strong> above to auto-distribute 100% across standard ranks or edit the ranks in the table below.
                 </p>
               </div>
             </div>
@@ -393,7 +393,7 @@ export default function AdminRanksPage() {
             <div className="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-200 text-xs flex items-start gap-2.5">
               <Info className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
               <div>
-                <span>ইনসেনটিভ পুল বর্তমানে শূন্য (৳০.০০)। যেকোনো নতুন অর্ডার সম্পন্ন হলে স্বয়ংক্রিয়ভাবে ৫% PV পুলে জমা হবে।</span>
+                <span>The incentive pool is currently empty (৳0.00). When a new order completes, 5% of net profit is automatically contributed to this pool.</span>
               </div>
             </div>
           ) : (
@@ -401,7 +401,7 @@ export default function AdminRanksPage() {
               <Sparkles className="h-4 w-4 text-purple-600 shrink-0 mt-0.5" />
               <div>
                 <span>
-                  পুলে থাকা <strong>{formatTaka(poolAmount)}</strong> সক্রিয় ৭টি র‍্যাঙ্কের নির্ধারিত পারসেন্টেজ অনুযায়ী বণ্টন করা হবে। কোনো নির্দিষ্ট র‍্যাঙ্কে যোগ্য মেম্বার না থাকলে সেই অংশের টাকা কোম্পানি রিটেইন করবে।
+                  The pool balance of <strong>{formatTaka(poolAmount)}</strong> will be distributed across the configured active ranks according to their defined percentages. If no members qualify for a particular rank, that rank's share is retained.
                 </span>
               </div>
             </div>

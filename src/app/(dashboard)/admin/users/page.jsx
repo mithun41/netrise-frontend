@@ -114,7 +114,7 @@ export default function AdminUsersPage() {
           <ShieldAlert className="h-8 w-8" />
         </div>
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-          Access Restricted (শুধুমাত্র অ্যাডমিন)
+          Access Restricted
         </h2>
         <p className="text-xs text-gray-500 mt-1">
           Only verified administrators and staff can access user directories, roles, and privileges.
@@ -202,7 +202,7 @@ export default function AdminUsersPage() {
             className="h-9 px-3.5 text-xs bg-[#F7A600] hover:bg-[#e69b00] text-black font-bold flex items-center gap-1.5 shadow-xs"
           >
             <UserPlus className="h-4 w-4" />
-            <span>+ Add New User (নতুন ইউজার)</span>
+            <span>+ Add New User</span>
           </Button>
         </div>
       </div>

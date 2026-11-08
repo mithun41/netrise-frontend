@@ -101,10 +101,10 @@ export default function MyOrdersPage() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                My Orders & Deliveries (আমার অর্ডার সমূহ)
+                My Orders & Deliveries
               </h1>
               <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
-                Track order progress, verify Point Value (PV) commission distribution, and download printable invoices.
+                Track order progress, verify net profit commission distribution, and download printable invoices.
               </p>
             </div>
           </div>
@@ -252,8 +252,8 @@ export default function MyOrdersPage() {
                   <th className="py-3 px-4">Date & Time</th>
                   <th className="py-3 px-4">Ordered Items</th>
                   <th className="py-3 px-4">Payment</th>
-                  <th className="py-3 px-4 text-right">Payable (DP)</th>
-                  <th className="py-3 px-4 text-right">Point Value</th>
+                  <th className="py-3 px-4 text-right">Payable</th>
+                  <th className="py-3 px-4 text-right">Commission Profit</th>
                   <th className="py-3 px-4 text-center">Fulfillment</th>
                   <th className="py-3 px-4 text-center">Action</th>
                 </tr>
@@ -274,9 +274,17 @@ export default function MyOrdersPage() {
                           <Package className="h-3.5 w-3.5 text-gray-400" />
                           <span>{order.order_number}</span>
                         </div>
-                        <span className="text-[10px] text-gray-400 block font-sans font-normal">
-                          To: {order.recipient_name || `@${order.username}`}
-                        </span>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          {order.delivery_type === "SELF_PICKUP" ? (
+                            <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.2 rounded border border-emerald-200 dark:border-emerald-800">
+                              Pickup: {order.pickup_shop_code || "Super Shop"}
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-gray-400 font-sans font-normal">
+                              To: {order.recipient_name || `@${order.username}`}
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Date */}
@@ -331,10 +339,10 @@ export default function MyOrdersPage() {
                         ৳{Number(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </td>
 
-                      {/* Total PV */}
+                      {/* Total Profit */}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="font-mono font-black text-emerald-600 dark:text-emerald-400">
-                          ৳{Number(order.total_pv).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          ৳{Number(order.total_profit !== undefined ? order.total_profit : order.total_pv).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </div>
                         {order.is_commission_distributed ? (
                           <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center justify-end gap-0.5">
@@ -377,7 +385,7 @@ export default function MyOrdersPage() {
                           className="h-8 px-2.5 text-xs font-semibold flex items-center gap-1.5 mx-auto hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950 dark:hover:text-emerald-300 transition-colors"
                         >
                           <FileText className="h-3.5 w-3.5" />
-                          <span>Invoice (চালান)</span>
+                          <span>Invoice</span>
                         </Button>
                       </td>
                     </tr>

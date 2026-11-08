@@ -188,19 +188,19 @@ export const api = {
   post: (endpoint, body, options) =>
     apiRequest(endpoint, {
       method: "POST",
-      body: JSON.stringify(body),
+      body: typeof FormData !== "undefined" && body instanceof FormData ? body : JSON.stringify(body),
       ...options,
     }),
   patch: (endpoint, body, options) =>
     apiRequest(endpoint, {
       method: "PATCH",
-      body: JSON.stringify(body),
+      body: typeof FormData !== "undefined" && body instanceof FormData ? body : JSON.stringify(body),
       ...options,
     }),
   put: (endpoint, body, options) =>
     apiRequest(endpoint, {
       method: "PUT",
-      body: JSON.stringify(body),
+      body: typeof FormData !== "undefined" && body instanceof FormData ? body : JSON.stringify(body),
       ...options,
     }),
   delete: (endpoint, options) => apiRequest(endpoint, { method: "DELETE", ...options }),

@@ -47,7 +47,7 @@ export default function KpiPage() {
     : [];
 
   return (
-    <PageShell title="KPI & Rank (র‍্যাঙ্ক অগ্রগতি)" description={kpi ? `Measured for: ${PERIOD_LABELS[kpi.period]}` : ""}>
+    <PageShell title="KPI & Rank" description={kpi ? `Measured for: ${PERIOD_LABELS[kpi.period]}` : ""}>
       <ErrorNote message={error} />
       <StatGrid
         items={[

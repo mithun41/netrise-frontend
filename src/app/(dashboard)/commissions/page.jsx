@@ -210,13 +210,13 @@ export default function CommissionsPage() {
                 <CardTitle>Live Commission Simulator</CardTitle>
               </div>
               <CardDescription>
-                Simulate any order or sale amount to see the exact mathematical 100% payout in BDT (৳)
+                Simulate any order net profit (Sale Price - Purchase Cost) to see the exact mathematical 100% payout in BDT (৳)
               </CardDescription>
             </div>
 
             {/* Quick Preset Buttons */}
             <div className="flex items-center gap-2">
-              {["1000", "5000", "10000", "50000"].map((amt) => (
+              {["500", "1000", "2500", "5000"].map((amt) => (
                 <button
                   key={amt}
                   onClick={() => handleAmountChange(amt)}
@@ -226,7 +226,7 @@ export default function CommissionsPage() {
                       : "bg-white text-gray-700 border-gray-200 hover:bg-gray-50 dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300"
                   }`}
                 >
-                  ৳{Number(amt).toLocaleString()}
+                  ৳{Number(amt).toLocaleString()} Profit
                 </button>
               ))}
             </div>
@@ -237,7 +237,7 @@ export default function CommissionsPage() {
           {/* Amount Input */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider shrink-0">
-              Sale / Package Amount:
+              Net Profit Amount:
             </label>
             <div className="relative max-w-xs w-full">
               <span className="absolute left-3 top-2.5 text-sm font-bold text-gray-400">৳</span>

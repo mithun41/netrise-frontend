@@ -35,7 +35,7 @@ export default function AdminReportsPage() {
   return (
     <AdminOnly>
       <PageShell
-        title="Reports & Audit (প্রতিবেদন)"
+        title="Reports & Audit"
         description="Business totals for any date range, and every admin action."
         actions={
           <Button size="sm" variant="outline" onClick={() => window.print()}>

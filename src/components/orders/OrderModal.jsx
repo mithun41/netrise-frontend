@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ShoppingBag,
   CreditCard,
@@ -12,6 +12,9 @@ import {
   Plus,
   Minus,
   Sparkles,
+  Boxes,
+  Store,
+  MapPin,
 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import Button from "@/components/common/Button";
@@ -25,13 +28,19 @@ export default function OrderModal({ isOpen, product, ...props }) {
 
 function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
   const availableBalance = Number(userWallet?.ewallet_balance || 0);
-  const unitDp = Number(product.dp || 0);
+  const unitPrice = Number(product.sale_price || product.dp || 0);
+  const unitProfit = Number(product.profit !== undefined ? product.profit : (product.pv || 0));
 
   const [quantity, setQuantity] = useState(1);
   // Default payment method: WALLET if balance is enough, else COD
   const [paymentMethod, setPaymentMethod] = useState(
-    unitDp > 0 && availableBalance >= unitDp ? "WALLET" : "COD"
+    unitPrice > 0 && availableBalance >= unitPrice ? "WALLET" : "COD"
   );
+  // Delivery & Pickup options (PDF Requirement)
+  const [deliveryType, setDeliveryType] = useState("HOME_DELIVERY");
+  const [superShops, setSuperShops] = useState([]);
+  const [selectedShopId, setSelectedShopId] = useState("");
+
   const [recipientName, setRecipientName] = useState("");
   const [recipientPhone, setRecipientPhone] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
@@ -42,9 +51,23 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const unitPv = Number(product.pv || 0);
-  const totalAmount = unitDp * quantity;
-  const totalPv = unitPv * quantity;
+  useEffect(() => {
+    api
+      .get("/api/super-shop/directory/")
+      .then((res) => {
+        const list = res.results || [];
+        setSuperShops(list);
+        if (list.length > 0) {
+          setSelectedShopId(String(list[0].id));
+        }
+      })
+      .catch((e) => console.warn("Could not load super shops", e));
+  }, []);
+
+  const selectedShop = superShops.find((s) => String(s.id) === String(selectedShopId));
+
+  const totalAmount = unitPrice * quantity;
+  const totalProfit = unitProfit * quantity;
   const hasEnoughBalance = availableBalance >= totalAmount;
 
   const handleSubmit = async (e) => {
@@ -52,8 +75,13 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
     setErrorMessage("");
     setSuccessMessage("");
 
-    if (!shippingAddress.trim()) {
+    if (deliveryType === "HOME_DELIVERY" && !shippingAddress.trim()) {
       setErrorMessage("Please enter a valid delivery address.");
+      return;
+    }
+
+    if (deliveryType === "SELF_PICKUP" && !selectedShopId) {
+      setErrorMessage("Please select an authorized Super Shop for pickup.");
       return;
     }
 
@@ -64,6 +92,11 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
 
     setSubmitting(true);
     try {
+      const finalAddress =
+        deliveryType === "SELF_PICKUP" && selectedShop
+          ? `Self-Pickup: ${selectedShop.shop_name} (${selectedShop.shop_code}), ${selectedShop.address}, ${selectedShop.upazila}, ${selectedShop.district}`
+          : shippingAddress.trim();
+
       const res = await api.post("/api/orders/create/", {
         items: [
           {
@@ -71,11 +104,13 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
             quantity: quantity,
           },
         ],
+        delivery_type: deliveryType,
+        pickup_shop_id: deliveryType === "SELF_PICKUP" ? Number(selectedShopId) : null,
         payment_method: paymentMethod,
         recipient_name: recipientName.trim(),
         recipient_phone: recipientPhone.trim(),
-        shipping_address: shippingAddress.trim(),
-        city: city.trim(),
+        shipping_address: finalAddress,
+        city: deliveryType === "SELF_PICKUP" && selectedShop ? selectedShop.district : city.trim(),
         notes: notes.trim(),
       });
 
@@ -105,7 +140,7 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Complete Your Order (অর্ডার কনফার্ম করুন)"
+      title="Complete Your Order"
       className="max-w-lg"
     >
       <form onSubmit={handleSubmit} className="space-y-4 text-sm">
@@ -127,29 +162,45 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
         {/* Product Summary Card */}
         <div className="p-3.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/40">
           <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-1.5">
-                {product.is_package && (
-                  <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 text-[10px] font-black uppercase tracking-wider">
-                    {product.badge || "Package"}
-                  </span>
+            <div className="flex items-start gap-3 min-w-0">
+              <div className="h-12 w-12 rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shrink-0 flex items-center justify-center">
+                {product.image_url ? (
+                  <img
+                    src={product.image_url}
+                    alt={product.name}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="text-gray-400">
+                    {product.is_package ? (
+                      <Boxes className="h-5 w-5 text-purple-600" />
+                    ) : (
+                      <ShoppingBag className="h-5 w-5 text-emerald-600" />
+                    )}
+                  </div>
                 )}
-                <span className="font-mono text-[11px] text-gray-500">{product.sku}</span>
               </div>
-              <h4 className="font-bold text-gray-900 dark:text-white text-sm mt-1">
-                {product.name}
-              </h4>
-              <div className="flex items-center gap-3 mt-1.5 text-xs">
-                <span className="text-gray-500">
-                  MRP: <span className="line-through">৳{Number(product.mrp).toLocaleString()}</span>
-                </span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  Member DP: ৳{unitDp.toLocaleString()}
-                </span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  PV: ৳{unitPv.toLocaleString()}
-                </span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  {product.is_package && (
+                    <span className="px-2 py-0.5 rounded-md bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 text-[10px] font-black uppercase tracking-wider">
+                      {product.badge || "Package"}
+                    </span>
+                  )}
+                  <span className="font-mono text-[11px] text-gray-500">{product.sku}</span>
+                </div>
+                <h4 className="font-bold text-gray-900 dark:text-white text-sm mt-0.5 truncate">
+                  {product.name}
+                </h4>
+                <div className="flex items-center gap-3 mt-1 text-xs">
+                  <span className="font-bold text-blue-600 dark:text-blue-400">
+                    Sale: ৳{unitPrice.toLocaleString()}
+                  </span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <Sparkles className="h-3 w-3" />
+                    Profit: ৳{unitProfit.toLocaleString()}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -177,7 +228,7 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
         {/* Payment Method Selector */}
         <div>
           <label className="block text-xs font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-2">
-            Select Payment Method (পেমেন্ট পদ্ধতি)
+            Select Payment Method
           </label>
           <div className="grid grid-cols-2 gap-2.5">
             {/* Wallet Option */}
@@ -235,13 +286,48 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
           </div>
         </div>
 
-        {/* Shipping Information */}
+        {/* Fulfillment & Delivery Selection (Home Delivery vs Super Shop Pickup) */}
         <div className="space-y-2.5">
           <label className="block text-xs font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider">
-            Delivery & Shipping Address (ডেলিভারি ঠিকানা)
+            Fulfillment & Delivery Method
           </label>
 
           <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setDeliveryType("HOME_DELIVERY")}
+              className={`p-2.5 rounded-xl border text-left transition-all ${
+                deliveryType === "HOME_DELIVERY"
+                  ? "border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 ring-2 ring-blue-500 shadow-2xs font-bold"
+                  : "border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-800"
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs text-gray-900 dark:text-white">
+                <Truck className="h-4 w-4 text-blue-600" />
+                <span>Home Delivery</span>
+              </div>
+              <p className="text-[10px] text-gray-500 mt-0.5">Delivered to your address</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setDeliveryType("SELF_PICKUP")}
+              className={`p-2.5 rounded-xl border text-left transition-all ${
+                deliveryType === "SELF_PICKUP"
+                  ? "border-emerald-600 bg-emerald-50/50 dark:bg-emerald-950/40 ring-2 ring-emerald-500 shadow-2xs font-bold"
+                  : "border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-gray-600 hover:bg-gray-50 dark:hover:bg-zinc-800"
+              }`}
+            >
+              <div className="flex items-center gap-1.5 text-xs text-gray-900 dark:text-white">
+                <Store className="h-4 w-4 text-emerald-600" />
+                <span>Super Shop Pickup</span>
+              </div>
+              <p className="text-[10px] text-gray-500 mt-0.5">Collect from local branch</p>
+            </button>
+          </div>
+
+          {/* Recipient Details */}
+          <div className="grid grid-cols-2 gap-2 pt-1">
             <Input
               placeholder="Recipient Name"
               value={recipientName}
@@ -256,28 +342,77 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
             />
           </div>
 
-          <Input
-            placeholder="Full Shipping Address (Road, House, Area)..."
-            value={shippingAddress}
-            onChange={(e) => setShippingAddress(e.target.value)}
-            required
-            className="text-xs"
-          />
+          {/* Conditional: Super Shop Pickup Dropdown OR Home Address */}
+          {deliveryType === "SELF_PICKUP" ? (
+            <div className="p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/40 dark:bg-emerald-950/20 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                <span className="flex items-center gap-1.5">
+                  <Store className="h-3.5 w-3.5" />
+                  Select Super Shop Pickup Outlet
+                </span>
+                <span className="text-[10px] bg-white dark:bg-zinc-900 px-2 py-0.5 rounded border border-emerald-300 font-mono">
+                  {selectedShop?.shop_code || "Branch"}
+                </span>
+              </div>
 
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              placeholder="City (e.g. Dhaka, Chittagong)"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="text-xs"
-            />
-            <Input
-              placeholder="Delivery Instructions (Optional)"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="text-xs"
-            />
-          </div>
+              {superShops.length > 0 ? (
+                <select
+                  value={selectedShopId}
+                  onChange={(e) => setSelectedShopId(e.target.value)}
+                  className="w-full h-9 px-3 text-xs rounded-lg border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white focus:outline-none"
+                >
+                  {superShops.map((shop) => (
+                    <option key={shop.id} value={shop.id}>
+                      {shop.shop_name} ({shop.shop_code}) - {shop.upazila}, {shop.district}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                  No Super Shops are currently open. Please choose Home Delivery or apply for a Super Shop franchise.
+                </div>
+              )}
+
+              {selectedShop && (
+                <div className="text-[11px] text-gray-700 dark:text-zinc-300 bg-white/90 dark:bg-zinc-900/90 p-2.5 rounded-lg border border-gray-100 dark:border-zinc-800 space-y-0.5">
+                  <div><strong>Pickup Location:</strong> {selectedShop.address}, {selectedShop.upazila}, {selectedShop.district}</div>
+                  <div><strong>Branch Helpline:</strong> {selectedShop.phone}</div>
+                </div>
+              )}
+
+              <Input
+                placeholder="Pickup Instructions / Notes (Optional)"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="text-xs"
+              />
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Input
+                placeholder="Full Shipping Address (Road, House, Area)..."
+                value={shippingAddress}
+                onChange={(e) => setShippingAddress(e.target.value)}
+                required
+                className="text-xs"
+              />
+
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="City (e.g. Dhaka, Chittagong)"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="text-xs"
+                />
+                <Input
+                  placeholder="Delivery Instructions (Optional)"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="text-xs"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pricing Summary Breakdown */}
@@ -289,9 +424,9 @@ function OrderForm({ isOpen, onClose, product, userWallet, onSuccess }) {
             </span>
           </div>
           <div className="flex justify-between text-gray-600 dark:text-zinc-400">
-            <span>Commissionable BV/PV Value:</span>
+            <span>Commissionable Profit:</span>
             <span className="font-mono text-emerald-600 font-bold">
-              ৳{totalPv.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              ৳{totalProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </span>
           </div>
           <div className="flex justify-between text-gray-600 dark:text-zinc-400">

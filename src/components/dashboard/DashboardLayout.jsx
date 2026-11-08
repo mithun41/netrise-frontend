@@ -60,8 +60,8 @@ export default function DashboardLayout({ children }) {
             <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
             <span>
               {!isInitialized
-                ? "Verifying Authentication... / লগইন যাচাই করা হচ্ছে..."
-                : "Redirecting to Login... / লগইন পেজে নিয়ে যাওয়া হচ্ছে..."}
+                ? "Verifying Authentication..."
+                : "Redirecting to Login..."}
             </span>
           </div>
         </div>

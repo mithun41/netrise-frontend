@@ -121,10 +121,10 @@ export default function ProductsPage() {
             </div>
             <div>
               <h1 className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">
-                Packages & Products (প্যাকেজ ও পণ্য শপ)
+                Packages & Products
               </h1>
               <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
-                Join with packages or purchase FMCG products. 100% MLM commission is distributed instantly on Point Value (PV).
+                Join with packages or purchase FMCG products. 100% affiliate commission is distributed instantly on net profit.
               </p>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function ProductsPage() {
               onClick={() => setIsInvoiceModalOpen(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold"
             >
-              Print Invoice (চালান দেখুন)
+              Print Invoice
             </Button>
             <button
               onClick={() => setCompletedOrder(null)}
@@ -213,9 +213,9 @@ export default function ProductsPage() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-gray-900 dark:text-white">100% PV Distribution</div>
+            <div className="text-xs font-bold text-gray-900 dark:text-white">100% Profit Distribution</div>
             <div className="text-[11px] text-gray-500 dark:text-zinc-400">
-              55% direct commission + 20% team generation overrides.
+              55% direct commission + 20% team generation overrides on net profit.
             </div>
           </div>
         </div>
@@ -337,17 +337,15 @@ export default function ProductsPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredProducts.map((prod) => {
-            const mrp = Number(prod.mrp || 0);
-            const dp = Number(prod.dp || 0);
-            const pv = Number(prod.pv || 0);
-            const discountAmount = mrp - dp;
+            const sale = Number(prod.sale_price || prod.dp || 0);
+            const profit = Number(prod.profit !== undefined ? prod.profit : (prod.pv || 0));
 
             return (
               <div
                 key={prod.id}
                 className="group relative flex flex-col rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 transition-all hover:shadow-lg hover:border-gray-300 dark:hover:border-zinc-700 overflow-hidden"
               >
-                {/* Package / Discount Header Badges */}
+                {/* Package / Badge Header */}
                 <div className="flex items-center justify-between gap-1.5 mb-2.5">
                   <div className="flex items-center gap-1.5">
                     {prod.is_package ? (
@@ -360,24 +358,26 @@ export default function ProductsPage() {
                       </span>
                     )}
                   </div>
-
-                  {prod.discount_percent > 0 && (
-                    <span className="px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 text-[10px] font-black tracking-wide border border-rose-200 dark:border-rose-900">
-                      {prod.discount_percent}% OFF
-                    </span>
-                  )}
                 </div>
 
-                {/* Thumbnail Icon Illustration */}
-                <div className="h-32 w-full rounded-xl bg-gradient-to-tr from-gray-50 to-gray-100 dark:from-zinc-800/60 dark:to-zinc-800/20 border border-gray-100 dark:border-zinc-800 flex items-center justify-center p-3 relative group-hover:scale-[1.01] transition-transform">
-                  <div className="p-3 rounded-2xl bg-white dark:bg-zinc-900 shadow-xs border border-gray-100 dark:border-zinc-800 text-gray-700 dark:text-zinc-300">
-                    {prod.is_package ? (
-                      <Boxes className="h-10 w-10 text-purple-600" />
-                    ) : (
-                      <ShoppingBag className="h-10 w-10 text-emerald-600" />
-                    )}
-                  </div>
-                  <div className="absolute bottom-2 left-2.5 font-mono text-[10px] text-gray-400 bg-white/80 dark:bg-zinc-900/80 px-1.5 py-0.5 rounded">
+                {/* Thumbnail Photo / Icon Illustration */}
+                <div className="h-40 w-full rounded-xl bg-gradient-to-tr from-gray-50 to-gray-100 dark:from-zinc-800/60 dark:to-zinc-800/20 border border-gray-100 dark:border-zinc-800 flex items-center justify-center relative overflow-hidden group-hover:scale-[1.01] transition-transform">
+                  {prod.image_url ? (
+                    <img
+                      src={prod.image_url}
+                      alt={prod.name}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-900 shadow-xs border border-gray-100 dark:border-zinc-800 text-gray-700 dark:text-zinc-300">
+                      {prod.is_package ? (
+                        <Boxes className="h-10 w-10 text-purple-600" />
+                      ) : (
+                        <ShoppingBag className="h-10 w-10 text-emerald-600" />
+                      )}
+                    </div>
+                  )}
+                  <div className="absolute bottom-2 left-2.5 font-mono text-[10px] text-gray-700 dark:text-gray-200 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xs px-2 py-0.5 rounded shadow-2xs">
                     {prod.sku}
                   </div>
                 </div>
@@ -393,42 +393,36 @@ export default function ProductsPage() {
 
                   {/* Price Section */}
                   <div className="mt-3 pt-3 border-t border-gray-100 dark:border-zinc-800 space-y-1.5">
-                    {/* Member DP vs Retail MRP */}
+                    {/* Sale Price */}
                     <div className="flex items-baseline justify-between">
                       <div>
                         <span className="text-[10px] text-gray-400 uppercase font-bold block">
-                          Member Price (DP)
+                          Price
                         </span>
                         <span className="text-lg font-black text-gray-900 dark:text-white font-mono">
-                          ৳{dp.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                          ৳{sale.toLocaleString(undefined, { minimumFractionDigits: 0 })}
                         </span>
                       </div>
                       <div className="text-right">
                         <span className="text-[10px] text-gray-400 uppercase font-bold block">
-                          MRP
+                          Stock
                         </span>
-                        <span className="text-xs text-gray-400 font-mono line-through">
-                          ৳{mrp.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                        <span className="text-xs text-gray-500 font-mono">
+                          {prod.stock_quantity} left
                         </span>
                       </div>
                     </div>
 
-                    {/* Point Value (PV) Badge */}
+                    {/* Profit Margin / Commission Pool Badge */}
                     <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
                       <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
                         <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Commission PV:</span>
+                        <span>Commission Profit:</span>
                       </div>
-                      <div className="font-mono font-black text-xs text-emerald-700 dark:text-emerald-300">
-                        ৳{pv.toLocaleString(undefined, { minimumFractionDigits: 0 })}
-                      </div>
+                      <span className="font-mono font-black text-xs text-emerald-700 dark:text-emerald-400">
+                        ৳{profit.toLocaleString(undefined, { minimumFractionDigits: 0 })}
+                      </span>
                     </div>
-
-                    {discountAmount > 0 && (
-                      <div className="text-[10px] text-emerald-600 font-semibold">
-                        Instant Savings: ৳{discountAmount.toLocaleString()}
-                      </div>
-                    )}
                   </div>
                 </div>
 
@@ -439,7 +433,7 @@ export default function ProductsPage() {
                     className="w-full text-xs font-bold py-2 bg-[#F7A600] hover:bg-[#e69b00] text-black shadow-xs flex items-center justify-center gap-1.5"
                   >
                     <ShoppingBag className="h-3.5 w-3.5" />
-                    <span>Order Now (কিনুন)</span>
+                    <span>Order Now</span>
                   </Button>
                 </div>
               </div>

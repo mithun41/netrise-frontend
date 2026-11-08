@@ -14,7 +14,7 @@ export default function NotificationsPage() {
 
   return (
     <PageShell
-      title="Notifications (নোটিফিকেশন)"
+      title="Notifications"
       description="Rank, commission and settlement updates."
       actions={
         data?.unread > 0 && (

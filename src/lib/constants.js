@@ -2,12 +2,14 @@ export const SITE_CONFIG = {
   name: "NetRise BOB",
   description: "Network Commerce, Super Shop & Multi-tier Affiliate Platform",
   url: "https://netrise.example.com",
-  author: "NetRise Team",
+  author: "SoftZen IT & NetRise Team",
 };
 
 export const NAV_LINKS = [
   { label: "Home", href: "/" },
-  { label: "My Team (Tree)", href: "/team" },
+  { label: "Products & Packages", href: "/products" },
+  { label: "Affiliate Plan", href: "/#affiliate" },
+  { label: "Super Shop", href: "/super-shop" },
   { label: "Dashboard", href: "/dashboard" },
 ];
 

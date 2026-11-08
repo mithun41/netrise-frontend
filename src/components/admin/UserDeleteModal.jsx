@@ -129,7 +129,7 @@ export default function UserDeleteModal({
           <div className="flex items-start gap-2.5">
             <ShieldAlert className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
             <div className="text-xs text-rose-900 dark:text-rose-200 leading-relaxed">
-              আপনি কি নিশ্চিত যে আপনি <strong>@{targetUser.username}</strong>-কে ডাটাবেজ থেকে <strong>স্থায়ীভাবে মুছে (Delete)</strong> ফেলতে চান?
+              Are you sure you want to <strong>permanently delete @{targetUser.username}</strong> from the database? This action cannot be undone.
             </div>
           </div>
         </div>
@@ -145,7 +145,7 @@ export default function UserDeleteModal({
           >
             {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
             <Trash2 className="h-4 w-4" />
-            <span>Yes, Permanently Delete User (স্থায়ীভাবে ডিলিট করুন)</span>
+            <span>Yes, Permanently Delete User</span>
           </Button>
 
           {/* 2. Secondary: Suspend/Deactivate instead */}
@@ -157,7 +157,7 @@ export default function UserDeleteModal({
             className="w-full text-xs text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 flex items-center justify-center gap-1.5"
           >
             <UserX className="h-3.5 w-3.5 text-amber-600" />
-            <span>Or Just Suspend Account (শুধু বন্ধ/নিষ্ক্রিয় করুন)</span>
+            <span>Or Just Suspend Account</span>
           </Button>
 
           {/* Cancel */}
@@ -168,7 +168,7 @@ export default function UserDeleteModal({
             disabled={submitting}
             className="w-full text-xs"
           >
-            Cancel (বাতিল)
+            Cancel
           </Button>
         </div>
       </div>

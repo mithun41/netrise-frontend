@@ -101,7 +101,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
             <div className="flex items-center gap-2">
               <Receipt className="h-4 w-4 text-emerald-600" />
               <span className="text-sm font-bold text-gray-900 dark:text-white">
-                Official Settlement Voucher (অফিসিয়াল রসিদ)
+                Official Settlement Voucher
               </span>
               <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                 <CheckCircle2 className="h-3 w-3" />
@@ -117,7 +117,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
                 className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-semibold text-xs h-8 px-3"
               >
                 <Printer className="h-3.5 w-3.5" />
-                <span>Print (প্রিন্ট)</span>
+                <span>Print</span>
               </Button>
               <button
                 onClick={onClose}
@@ -155,7 +155,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
 
                 <div className="text-left sm:text-right">
                   <span className="inline-block px-3 py-1 rounded-md bg-emerald-100 text-emerald-800 text-xs font-black tracking-wider uppercase border border-emerald-300">
-                    PAYMENT VOUCHER / অর্থ রসিদ
+                    PAYMENT VOUCHER
                   </span>
                   <p className="font-mono text-sm font-bold text-gray-900 mt-1.5">
                     {receipt.receipt_number}
@@ -207,7 +207,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
               <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-4">
                 <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1.5">
                   <User className="h-3.5 w-3.5 text-gray-600" />
-                  <span>Beneficiary Information (প্রাপকের বিবরণ)</span>
+                  <span>Beneficiary Information</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-xs">
                   <div>
@@ -243,7 +243,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-800">
-                        SETTLED NET AMOUNT (পরিশোধিত অর্থ)
+                        SETTLED NET AMOUNT
                       </span>
                       <span className="inline-block border border-emerald-600 bg-white/90 text-emerald-700 font-black text-[10px] px-2 py-0.5 rounded uppercase tracking-wider shadow-2xs">
                         ✓ SETTLED & VERIFIED
@@ -320,7 +320,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
                 onClick={onClose}
                 className="text-xs h-8 px-4"
               >
-                Close (বন্ধ করুন)
+                Close
               </Button>
               <Button
                 variant="primary"
@@ -329,7 +329,7 @@ export default function SettlementReceiptModal({ isOpen, onClose, receipt }) {
                 className="bg-emerald-600 hover:bg-emerald-700 text-white gap-1.5 text-xs h-8 px-4"
               >
                 <Printer className="h-3.5 w-3.5" />
-                <span>Print Voucher (প্রিন্ট)</span>
+                <span>Print Voucher</span>
               </Button>
             </div>
           </div>

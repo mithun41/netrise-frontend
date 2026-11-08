@@ -16,9 +16,9 @@ const APPLY_FIELDS = [
   { name: "owner_name", label: "Owner name", required: true },
   { name: "phone", label: "Mobile number", required: true },
   { name: "address", label: "Address", type: "textarea", required: true },
-  { name: "division", label: "Division (বিভাগ)", required: true },
-  { name: "district", label: "District (জেলা)", required: true },
-  { name: "upazila", label: "Upazila (উপজেলা)", required: true },
+  { name: "division", label: "Division", required: true },
+  { name: "district", label: "District", required: true },
+  { name: "upazila", label: "Upazila", required: true },
   { name: "trade_license", label: "Trade license number" },
   { name: "merchant_code", label: "Merchant owner's referral code", help: "Leave empty to use your sponsor." },
 ];
@@ -232,7 +232,7 @@ export default function SuperShopPage() {
 
   return (
     <PageShell
-      title="Super Shop (সুপার শপ)"
+      title="Super Shop"
       description="Shop profile, wholesale orders, QR payments and shop directory."
       actions={
         <>

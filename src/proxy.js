@@ -25,9 +25,9 @@ export function proxy(request) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("netrise_token")?.value;
 
-  // There is no public home page: send visitors straight into the app
+  // Allow public landing page (/)
   if (pathname === "/") {
-    return NextResponse.redirect(new URL(token ? "/dashboard" : "/login", request.url));
+    return NextResponse.next();
   }
 
   const isProtected = PROTECTED_PREFIXES.some(

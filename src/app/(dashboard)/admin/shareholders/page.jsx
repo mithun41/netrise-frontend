@@ -74,7 +74,7 @@ export default function AdminShareholdersPage() {
   return (
     <AdminOnly>
       <PageShell
-        title="Shareholders (শেয়ারহোল্ডার)"
+        title="Shareholders"
         description="Shareholder records and their investment, withdrawal and dividend history."
         actions={
           <>

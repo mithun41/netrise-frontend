@@ -20,35 +20,35 @@ export default function AgreementForm({ shop }) {
         }
       `}</style>
       <div className="flex items-center justify-between">
-        <SectionTitle>Super Shop Agreement (চুক্তিপত্র)</SectionTitle>
+        <SectionTitle>Super Shop Agreement</SectionTitle>
         <Button size="sm" variant="outline" onClick={() => window.print()}>
           <Printer className="h-3.5 w-3.5" /> Print
         </Button>
       </div>
       <div id="shop-agreement" className="space-y-3 text-sm text-gray-700 dark:text-zinc-300">
         <h3 className="text-center text-base font-bold text-gray-900 dark:text-white">
-          NetRise BOB সুপার শপ চুক্তিপত্র
+          NetRise BOB Super Shop Agreement
         </h3>
         <p>
-          দোকানের নাম: <strong>{shop.shop_name}</strong> ({shop.shop_code}) &bull; মালিক: <strong>{shop.owner_name}</strong>
+          Shop Name: <strong>{shop.shop_name}</strong> ({shop.shop_code}) &bull; Owner: <strong>{shop.owner_name}</strong>
         </p>
         <p>
-          ঠিকানা: {shop.address}, {shop.upazila}, {shop.district}, {shop.division} &bull; মোবাইল: {shop.phone}
+          Address: {shop.address}, {shop.upazila}, {shop.district}, {shop.division} &bull; Phone: {shop.phone}
         </p>
         <p>
-          পণ্যের বিক্রয়ের উপর লাভের হার: <strong>{Number(shop.profit_percent) > 0 ? `${shop.profit_percent}%` : blank}</strong>
+          Profit Margin on Sales: <strong>{Number(shop.profit_percent) > 0 ? `${shop.profit_percent}%` : blank}</strong>
         </p>
         {shop.agreement_terms && <p className="whitespace-pre-line">{shop.agreement_terms}</p>}
         <div className="grid grid-cols-2 gap-8 pt-10 text-center">
           <div>
-            <div className="border-t border-gray-400 pt-1">{shop.shop_signatory || "সুপার শপের পক্ষে স্বাক্ষর"}</div>
+            <div className="border-t border-gray-400 pt-1">{shop.shop_signatory || "Authorized Shop Signatory"}</div>
           </div>
           <div>
-            <div className="border-t border-gray-400 pt-1">{shop.company_signatory || "কোম্পানির পক্ষে স্বাক্ষর"}</div>
+            <div className="border-t border-gray-400 pt-1">{shop.company_signatory || "Authorized Company Signatory"}</div>
           </div>
         </div>
         {shop.agreement_signed_at && (
-          <p className="text-center text-xs text-gray-500">তারিখ: {formatDate(shop.agreement_signed_at)}</p>
+          <p className="text-center text-xs text-gray-500">Date: {formatDate(shop.agreement_signed_at)}</p>
         )}
       </div>
     </div>

@@ -67,7 +67,7 @@ export default function AdminCommissionRulesPage() {
   return (
     <AdminOnly>
       <PageShell
-        title="Commission Rates (কমিশনের হার)"
+        title="Commission Rates"
         description="New rates apply to future sales only. Rates must always total 100%."
       >
         <ErrorNote message={error} />

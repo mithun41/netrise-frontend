@@ -21,12 +21,12 @@ import Input from "@/components/common/Input";
 import { api } from "@/services/api";
 
 const STATUS_CHOICES = [
-  { value: "PENDING", label: "Pending Confirmation (অপেক্ষমান)" },
-  { value: "CONFIRMED", label: "Confirmed (অর্ডার নিশ্চিত হয়েছে)" },
-  { value: "PROCESSING", label: "Processing & Packaging (প্যাকিং চলছে)" },
-  { value: "SHIPPED", label: "Shipped / In Transit (কুরিয়ারে পাঠানো হয়েছে)" },
-  { value: "DELIVERED", label: "Delivered & Settled (ডেলিভারি সম্পন্ন)" },
-  { value: "CANCELLED", label: "Cancelled (বাতিল)" },
+  { value: "PENDING", label: "Pending Confirmation" },
+  { value: "CONFIRMED", label: "Confirmed" },
+  { value: "PROCESSING", label: "Processing & Packaging" },
+  { value: "SHIPPED", label: "Shipped / In Transit" },
+  { value: "DELIVERED", label: "Delivered & Settled" },
+  { value: "CANCELLED", label: "Cancelled" },
 ];
 
 export default function OrderStatusModal({ isOpen, order, ...props }) {
@@ -119,7 +119,7 @@ function OrderStatusForm({ isOpen, onClose, order, onSuccess }) {
               </div>
               <div className="text-[10px] text-emerald-600 font-bold flex items-center justify-end gap-0.5">
                 <Sparkles className="h-2.5 w-2.5" />
-                <span>PV: ৳{Number(order.total_pv).toLocaleString()}</span>
+                <span>Profit: ৳{Number(order.total_profit !== undefined ? order.total_profit : order.total_pv).toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@ function OrderStatusForm({ isOpen, onClose, order, onSuccess }) {
         {/* Status Dropdown Selector */}
         <div className="space-y-1.5">
           <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px]">
-            New Fulfillment Status (নতুন স্ট্যাটাস নির্বাচন করুন) *
+            New Fulfillment Status *
           </label>
           <select
             value={selectedStatus}
@@ -160,10 +160,10 @@ function OrderStatusForm({ isOpen, onClose, order, onSuccess }) {
           <div className="p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-xs text-emerald-800 dark:text-emerald-300">
               <Zap className="h-4 w-4 text-emerald-600 fill-emerald-600" />
-              <span>স্বয়ংক্রিয় ১০০% কমিশন বণ্টন কার্যকর হবে!</span>
+              <span>Automated 100% Commission Distribution Triggered</span>
             </div>
             <p className="text-[11px] leading-relaxed text-emerald-800/90 dark:text-emerald-300/90">
-              এই অর্ডারটি <strong>DELIVERED</strong> চিহ্নিত করার সাথে সাথেই এর <strong>৳{Number(order.total_pv).toLocaleString()} PV</strong>-এর ওপর ৫৫% ডিরেক্ট সেলস কমিশন স্পন্সরের ওয়ালেটে এবং ২০% লেভেল ১–১০ আপলাইনদের মাঝে স্বয়ংক্রিয়ভাবে ক্রেডিট হয়ে যাবে।
+              Marking this order as <strong>DELIVERED</strong> will immediately disburse 100% of the net profit (<strong>৳{Number(order.total_profit !== undefined ? order.total_profit : order.total_pv).toLocaleString()}</strong>): 55% direct commission to sponsor and 20% team generation overrides to levels 1–10 uplines.
             </p>
           </div>
         )}
@@ -171,7 +171,7 @@ function OrderStatusForm({ isOpen, onClose, order, onSuccess }) {
         {/* Courier Consignment Tracking / Admin Note */}
         <div className="space-y-1">
           <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px]">
-            Courier Consignment / Tracking Note (কুরিয়ার ট্র্যাকিং কোড বা নোট)
+            Courier Consignment / Tracking Note
           </label>
           <Input
             type="text"
@@ -205,8 +205,8 @@ function OrderStatusForm({ isOpen, onClose, order, onSuccess }) {
             {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             <span>
               {willTriggerCommission
-                ? "Confirm Delivery & Distribute Commissions (ডেলিভারি সম্পন্ন করুন)"
-                : "Update Status (স্ট্যাটাস আপডেট করুন)"}
+                ? "Confirm Delivery & Distribute Commissions"
+                : "Update Status"}
             </span>
           </Button>
         </div>

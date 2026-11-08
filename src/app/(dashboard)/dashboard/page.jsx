@@ -20,12 +20,14 @@ import {
   Wallet as WalletIcon,
   ShoppingBag,
   Package,
+  Store,
 } from "lucide-react";
 
 export default function DashboardPage() {
   const { user, isAuthenticated, initializeAuth } = useAuthStore();
   const [summary, setSummary] = useState(null);
   const [wallet, setWallet] = useState(null);
+  const [superShopCount, setSuperShopCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -38,10 +40,12 @@ export default function DashboardPage() {
     Promise.all([
       api.get("/api/auth/referrals/summary/"),
       api.get("/api/wallet/summary/"),
+      api.get("/api/super-shop/directory/").catch(() => ({ results: [] })),
     ])
-      .then(([sumRes, walRes]) => {
+      .then(([sumRes, walRes, shopRes]) => {
         setSummary(sumRes);
         setWallet(walRes);
+        setSuperShopCount(shopRes?.results?.length || 0);
       })
       .catch((e) => console.warn("Could not load dashboard data", e))
       .finally(() => setTimeout(() => setIsRefreshing(false), 400));
@@ -294,6 +298,27 @@ export default function DashboardPage() {
                   </span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-gray-500 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+
+              {/* Authorized Super Shops link */}
+              <Link
+                href="/super-shop"
+                className="flex items-center justify-between p-3.5 rounded-xl bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/20 dark:hover:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
+                    <Store className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200 block">
+                      Authorized Super Shops
+                    </span>
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-medium">
+                      {superShopCount} Active Outlets Nationwide
+                    </span>
+                  </div>
+                </div>
+                <ChevronRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
               </Link>
             </div>
           </div>

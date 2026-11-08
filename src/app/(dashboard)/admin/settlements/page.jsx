@@ -92,7 +92,7 @@ export default function AdminSettlementsPage() {
           <ShieldAlert className="h-8 w-8" />
         </div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          Access Restricted / অনুমতি নেই
+          Access Restricted
         </h2>
         <p className="text-sm text-gray-500 mt-2 max-w-md mx-auto">
           This administration section is restricted to authorized financial officers and system administrators.
@@ -129,7 +129,7 @@ export default function AdminSettlementsPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-              Cashout Clearance & Manual Settlement (অ্যাডমিন ক্লিয়ারেন্স)
+              Cashout Clearance & Manual Settlement
             </h1>
             <Badge variant="purple" size="md">
               Staff Console
@@ -246,11 +246,11 @@ export default function AdminSettlementsPage() {
                 className="h-9 px-3 text-xs rounded-lg border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-200 focus:outline-none"
               >
                 <option value="all">All Channels</option>
-                <option value="BKASH">bKash (বিকাশ)</option>
-                <option value="NAGAD">Nagad (নগদ)</option>
-                <option value="ROCKET">Rocket (রকেট)</option>
-                <option value="BANK">Bank Transfer (ব্যাংক)</option>
-                <option value="CASH">Office Cash (ক্যাশ)</option>
+                <option value="BKASH">bKash</option>
+                <option value="NAGAD">Nagad</option>
+                <option value="ROCKET">Rocket</option>
+                <option value="BANK">Bank Transfer</option>
+                <option value="CASH">Office Cash</option>
               </select>
             </div>
           </div>

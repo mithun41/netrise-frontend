@@ -14,6 +14,9 @@ import {
   Tag,
   ToggleLeft,
   ToggleRight,
+  UploadCloud,
+  Trash2,
+  Image as ImageIcon,
 } from "lucide-react";
 import Modal from "@/components/common/Modal";
 import Button from "@/components/common/Button";
@@ -21,7 +24,7 @@ import Input from "@/components/common/Input";
 import { api } from "@/services/api";
 
 const RANK_OPTIONS = [
-  { value: "", label: "No Rank Upgrade (সাধারণ প্যাকেজ)" },
+  { value: "", label: "No Rank Upgrade (Standard Package)" },
   { value: "SEO", label: "SEO - Senior Executive Officer" },
   { value: "SPO", label: "SPO - Senior Planning Officer" },
   { value: "SME", label: "SME - Senior Management Executive" },
@@ -48,9 +51,16 @@ function ProductForm({
   const [name, setName] = useState(product?.name || "");
   const [sku, setSku] = useState(product?.sku || "");
   const [category, setCategory] = useState(product?.category ? String(product.category) : defaultCategory);
-  const [mrp, setMrp] = useState(product?.mrp ? String(product.mrp) : "");
-  const [dp, setDp] = useState(product?.dp ? String(product.dp) : "");
-  const [pv, setPv] = useState(product?.pv ? String(product.pv) : "");
+  const [purchasePrice, setPurchasePrice] = useState(
+    product?.purchase_price !== undefined && product?.purchase_price !== null
+      ? String(product.purchase_price)
+      : (product?.dp && product?.pv ? String(Math.max(0, Number(product.dp) - Number(product.pv))) : "")
+  );
+  const [salePrice, setSalePrice] = useState(
+    product?.sale_price !== undefined && product?.sale_price !== null
+      ? String(product.sale_price)
+      : (product?.dp ? String(product.dp) : "")
+  );
   const [wholesale, setWholesale] = useState(product?.wholesale_price ? String(product.wholesale_price) : "");
   const [stockQuantity, setStockQuantity] = useState(
     product?.stock_quantity !== undefined ? String(product.stock_quantity) : "100"
@@ -61,14 +71,42 @@ function ProductForm({
   const [description, setDescription] = useState(product?.description || "");
   const [isActive, setIsActive] = useState(product?.is_active !== undefined ? product.is_active : true);
 
+  // Photo & Image States
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(product?.image_url || null);
+  const [imageUrlInput, setImageUrlInput] = useState(product?.image_url || "");
+
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const numMrp = parseFloat(mrp) || 0;
-  const numDp = parseFloat(dp) || 0;
-  const numPv = parseFloat(pv) || 0;
-  const discountPercent = numMrp > 0 ? Math.round(((numMrp - numDp) / numMrp) * 100) : 0;
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setErrorMessage("Please select a valid image file (PNG, JPG, WEBP, etc.)");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage("Image file size must be less than 5MB");
+        return;
+      }
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      setErrorMessage("");
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setImageUrlInput("");
+  };
+
+  const numPurchase = parseFloat(purchasePrice) || 0;
+  const numSale = parseFloat(salePrice) || 0;
+  const numProfit = Math.max(0, numSale - numPurchase);
+  const profitMarginPercent = numSale > 0 ? Math.round((numProfit / numSale) * 100) : 0;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -79,39 +117,61 @@ function ProductForm({
       setErrorMessage("Please enter a product name.");
       return;
     }
-    if (numMrp <= 0 || numDp <= 0 || numPv <= 0) {
-      setErrorMessage("MRP, Member DP, and Point Value (PV) must all be greater than 0.");
+    if (numSale <= 0) {
+      setErrorMessage("Sale price must be greater than 0.");
       return;
     }
-    if (numDp > numMrp) {
-      setErrorMessage("Member DP (৳) cannot be higher than Retail MRP (৳).");
+    if (numPurchase < 0) {
+      setErrorMessage("Purchase price cannot be negative.");
+      return;
+    }
+    if (numSale < numPurchase) {
+      setErrorMessage("Sale price cannot be lower than purchase cost price.");
       return;
     }
 
     setSubmitting(true);
     try {
-      const payload = {
-        name: name.trim(),
-        sku: sku.trim(),
-        category: category ? Number(category) : null,
-        mrp: numMrp.toFixed(2),
-        dp: numDp.toFixed(2),
-        pv: numPv.toFixed(2),
-        wholesale_price: wholesale ? Number(wholesale).toFixed(2) : null,
-        stock_quantity: parseInt(stockQuantity, 10) || 0,
-        is_package: isPackage,
-        package_rank: isPackage && packageRank ? packageRank : null,
-        badge: isPackage && badge.trim() ? badge.trim() : (badge.trim() || null),
-        description: description.trim(),
-        is_active: isActive,
-      };
+      const formData = new FormData();
+      formData.append("name", name.trim());
+      formData.append("sku", sku.trim());
+      if (category) {
+        formData.append("category", category);
+      }
+      formData.append("purchase_price", numPurchase.toFixed(2));
+      formData.append("sale_price", numSale.toFixed(2));
+      formData.append("mrp", numSale.toFixed(2));
+      formData.append("dp", numSale.toFixed(2));
+      formData.append("pv", numProfit.toFixed(2));
+      if (wholesale) {
+        formData.append("wholesale_price", Number(wholesale).toFixed(2));
+      }
+      formData.append("stock_quantity", parseInt(stockQuantity, 10) || 0);
+      formData.append("is_package", isPackage ? "true" : "false");
+      if (isPackage && packageRank) {
+        formData.append("package_rank", packageRank);
+      }
+      if (badge.trim()) {
+        formData.append("badge", badge.trim());
+      }
+      formData.append("description", description.trim());
+      formData.append("is_active", isActive ? "true" : "false");
+
+      // Handle Image File or URL
+      if (imageFile) {
+        formData.append("image", imageFile);
+      } else if (imageUrlInput.trim()) {
+        formData.append("image_url", imageUrlInput.trim());
+      } else if (!imagePreview && isEdit) {
+        formData.append("image_url", "");
+      }
 
       let result;
       if (isEdit) {
-        result = await api.patch(`/api/products/admin/${product.id}/`, payload);
+        result = await api.patch(`/api/products/admin/${product.id}/`, formData);
         setSuccessMessage(`Product "${result.name}" updated successfully!`);
       } else {
-        result = await api.post("/api/products/admin/create/", payload);
+        result = await api.post("/api/products/admin/create/", formData);
         setSuccessMessage(`Product "${result.name}" created with SKU ${result.sku}!`);
       }
 
@@ -135,7 +195,7 @@ function ProductForm({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEdit ? "Edit Product / Package (সম্পাদনা করুন)" : "Add New Product or Package (নতুন পণ্য / প্যাকেজ)"}
+      title={isEdit ? "Edit Product / Package" : "Add New Product or Package"}
       className="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4 text-xs">
@@ -157,7 +217,7 @@ function ProductForm({
         {/* 1. Item Type Toggle: Standard Product vs Membership Package */}
         <div className="p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/40">
           <label className="block text-[11px] font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-2">
-            Catalog Classification (পণ্যের ধরণ)
+            Catalog Classification
           </label>
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -171,7 +231,7 @@ function ProductForm({
             >
               <div className="flex items-center gap-2">
                 <Boxes className="h-4 w-4 text-blue-600" />
-                <span>Standard Product (ভোক্তা পণ্য)</span>
+                <span>Standard Product</span>
               </div>
               <p className="text-[10px] text-gray-500 mt-1">General FMCG / Health items</p>
             </button>
@@ -187,7 +247,7 @@ function ProductForm({
             >
               <div className="flex items-center gap-2">
                 <Award className="h-4 w-4 text-purple-600" />
-                <span>Joining Package (জয়েনিং প্যাকেজ)</span>
+                <span>Joining Package</span>
               </div>
               <p className="text-[10px] text-gray-500 mt-1">Starter / VIP membership package</p>
             </button>
@@ -198,7 +258,7 @@ function ProductForm({
         <div className="space-y-3">
           <div>
             <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-              Product / Package Title (নাম) *
+              Product / Package Title *
             </label>
             <Input
               type="text"
@@ -212,7 +272,7 @@ function ProductForm({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-                Category (ক্যাটাগরি)
+                Category
               </label>
               <select
                 value={category}
@@ -230,7 +290,7 @@ function ProductForm({
 
             <div>
               <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-                SKU / Product Code (খালি রাখলে অটো তৈরি হবে)
+                SKU / Product Code (Auto-generated if empty)
               </label>
               <Input
                 type="text"
@@ -242,61 +302,159 @@ function ProductForm({
           </div>
         </div>
 
-        {/* 3. Pricing & Commission Point Value (PV) */}
-        <div className="p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/40 space-y-3">
+        {/* 3. Product Photo & Image Upload */}
+        <div className="p-3.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/40 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-gray-800 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <UploadCloud className="h-3.5 w-3.5 text-blue-600" />
+              Product Picture / Photo
+            </span>
+            {imagePreview && (
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="text-[10px] text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 transition-colors"
+              >
+                <Trash2 className="h-3 w-3" /> Remove Photo
+              </button>
+            )}
+          </div>
+
+          {imagePreview ? (
+            <div className="flex items-center gap-3.5 p-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-2xs">
+              <div className="h-16 w-16 rounded-xl overflow-hidden border border-gray-200 dark:border-zinc-700 shrink-0 bg-gray-100 flex items-center justify-center relative">
+                <img
+                  src={imagePreview}
+                  alt="Product preview"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs text-gray-900 dark:text-white truncate">
+                  {imageFile ? imageFile.name : (name || "Product Image")}
+                </div>
+                <div className="text-[10px] text-gray-500 mt-0.5">
+                  {imageFile
+                    ? `${(imageFile.size / 1024).toFixed(1)} KB • Ready to save`
+                    : "Current active photo"}
+                </div>
+                <label className="inline-block mt-1 text-[11px] font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 cursor-pointer">
+                  Change Photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+                </label>
+              </div>
+            </div>
+          ) : (
+            <label className="border-2 border-dashed border-gray-300 dark:border-zinc-700 hover:border-blue-500 dark:hover:border-blue-500 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer transition-colors bg-white dark:bg-zinc-900">
+              <div className="p-2.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 mb-2">
+                <UploadCloud className="h-5 w-5" />
+              </div>
+              <div className="text-xs font-bold text-gray-800 dark:text-zinc-200">
+                Click to upload product photo
+              </div>
+              <p className="text-[10px] text-gray-400 mt-0.5">
+                PNG, JPG, WEBP or GIF up to 5MB
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          )}
+
+          {/* Optional external image link */}
+          <div>
+            <label className="block text-[10px] text-gray-500 dark:text-zinc-400 mb-1">
+              Or provide an image web link (optional)
+            </label>
+            <Input
+              type="url"
+              placeholder="https://example.com/images/product.jpg"
+              value={imageUrlInput}
+              onChange={(e) => {
+                setImageUrlInput(e.target.value);
+                if (e.target.value && !imageFile) {
+                  setImagePreview(e.target.value);
+                }
+              }}
+            />
+          </div>
+        </div>
+
+        {/* 4. Pricing & Profit Margin (Purchase Price & Sale Price) */}
+        <div className="p-3.5 rounded-xl border border-gray-200 dark:border-zinc-800 bg-gray-50/70 dark:bg-zinc-800/40 space-y-3">
           <div className="flex items-center justify-between">
             <span className="font-bold text-gray-800 dark:text-white uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <DollarSign className="h-3.5 w-3.5 text-emerald-600" />
-              Commercial Pricing & PV (মূল্য ও কমিশন পয়েন্ট)
+              Product Pricing & Profit Margin
             </span>
-            {discountPercent > 0 && (
-              <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-[10px] font-bold">
-                {discountPercent}% Member Discount
+            {profitMarginPercent > 0 && (
+              <span className="px-2 py-0.5 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 text-[10px] font-bold">
+                {profitMarginPercent}% Profit Margin
               </span>
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block font-bold text-gray-600 dark:text-zinc-400 text-[10px] mb-1">
-                Retail MRP (৳)
+              <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[11px] mb-1">
+                Purchase Price (৳) *
               </label>
               <Input
                 type="number"
                 step="0.01"
-                placeholder="e.g. 2500"
-                value={mrp}
-                onChange={(e) => setMrp(e.target.value)}
+                placeholder="e.g. 600.00"
+                value={purchasePrice}
+                onChange={(e) => setPurchasePrice(e.target.value)}
                 required
               />
+              <span className="text-[10px] text-gray-400 block mt-0.5">
+                Actual cost to produce or acquire product
+              </span>
             </div>
 
             <div>
-              <label className="block font-bold text-blue-600 dark:text-blue-400 text-[10px] mb-1">
-                Member DP (৳) *
+              <label className="block font-bold text-blue-600 dark:text-blue-400 text-[11px] mb-1">
+                Sale Price (৳) *
               </label>
               <Input
                 type="number"
                 step="0.01"
-                placeholder="e.g. 2000"
-                value={dp}
-                onChange={(e) => setDp(e.target.value)}
+                placeholder="e.g. 1000.00"
+                value={salePrice}
+                onChange={(e) => setSalePrice(e.target.value)}
                 required
               />
+              <span className="text-[10px] text-gray-400 block mt-0.5">
+                Price paid by member or customer
+              </span>
             </div>
+          </div>
 
+          {/* Live Profit Calculation Card */}
+          <div className="p-3 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-950/30 flex items-center justify-between">
             <div>
-              <label className="block font-bold text-emerald-600 dark:text-emerald-400 text-[10px] mb-1">
-                Point Value PV (৳) *
-              </label>
-              <Input
-                type="number"
-                step="0.01"
-                placeholder="e.g. 1500"
-                value={pv}
-                onChange={(e) => setPv(e.target.value)}
-                required
-              />
+              <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider block">
+                Net Profit (Commission Base)
+              </span>
+              <span className="text-xl font-black text-emerald-700 dark:text-emerald-400 font-mono">
+                ৳{numProfit.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="text-[10px] text-gray-500 font-mono block">
+                (৳{numSale} - ৳{numPurchase})
+              </span>
+              <span className="text-[10px] font-bold text-emerald-600">
+                100% Commission Pool
+              </span>
             </div>
           </div>
 
@@ -307,11 +465,12 @@ function ProductForm({
             step="0.01"
             min="0"
             value={wholesale}
-            helperText="Leave empty to use the Member DP."
+            helperText="Leave empty to use the standard Sale Price."
             onChange={(e) => setWholesale(e.target.value)}
           />
-          <div className="text-[10px] text-gray-500 dark:text-zinc-400 bg-white dark:bg-zinc-900 p-2 rounded-lg border border-gray-200 dark:border-zinc-800">
-            ★ <strong className="text-gray-700 dark:text-zinc-200">PV ব্যাখ্যা:</strong> যখন কোনো মেম্বার এই পণ্য কিনবে, তখন এর <strong>৳{numPv.toLocaleString()} PV</strong>-এর ওপর ৫৫% স্পন্সর কমিশন এবং ২০% লেভেল ১-১০ টিমের মাঝে স্বয়ংক্রিয়ভাবে বণ্টিত হবে।
+
+          <div className="text-[10px] text-gray-600 dark:text-zinc-400 bg-white dark:bg-zinc-900 p-2.5 rounded-lg border border-gray-200 dark:border-zinc-800 leading-relaxed">
+            ★ <strong className="text-gray-800 dark:text-zinc-200">Commission Rule:</strong> When sold, 100% of the net profit (<strong>৳{numProfit.toLocaleString()}</strong>) is distributed across the affiliate engine (55% Direct Sponsor, 20% Team Levels 1–10, 19% Company Profit, 5% Leadership Incentive Pool, 1% Super Shop).
           </div>
         </div>
 
@@ -326,7 +485,7 @@ function ProductForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                  Rank Upgrade Awarded (র‌্যাঙ্ক প্রমোশন)
+                  Rank Upgrade Awarded
                 </label>
                 <select
                   value={packageRank}
@@ -343,7 +502,7 @@ function ProductForm({
 
               <div>
                 <label className="block font-bold text-gray-700 dark:text-zinc-300 text-[10px] mb-1">
-                  Badge Label (ব্যাজ লেখা)
+                  Badge Label
                 </label>
                 <Input
                   type="text"
@@ -360,7 +519,7 @@ function ProductForm({
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-              Stock Quantity (মজুত সংখ্যা)
+              Stock Quantity
             </label>
             <Input
               type="number"
@@ -372,7 +531,7 @@ function ProductForm({
 
           <div>
             <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-              Product Visibility (স্ট্যাটাস)
+              Product Visibility
             </label>
             <button
               type="button"
@@ -383,7 +542,7 @@ function ProductForm({
                   : "border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 text-gray-500"
               }`}
             >
-              <span>{isActive ? "Active (সক্রিয়)" : "Inactive (বন্ধ)"}</span>
+              <span>{isActive ? "Active" : "Inactive"}</span>
               {isActive ? (
                 <ToggleRight className="h-5 w-5 text-emerald-600" />
               ) : (
@@ -396,7 +555,7 @@ function ProductForm({
         {/* 6. Description */}
         <div>
           <label className="block font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider text-[10px] mb-1">
-            Description / Specifications (বিবরণ)
+            Description / Specifications
           </label>
           <textarea
             rows={3}
@@ -425,7 +584,7 @@ function ProductForm({
             className="bg-[#F7A600] hover:bg-[#e69b00] text-black font-bold flex items-center gap-1.5"
           >
             {submitting && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            <span>{isEdit ? "Update Product (আপডেট করুন)" : "Save Product (সংরক্ষণ করুন)"}</span>
+            <span>{isEdit ? "Update Product" : "Save Product"}</span>
           </Button>
         </div>
       </form>

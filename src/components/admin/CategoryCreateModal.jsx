@@ -53,7 +53,7 @@ export default function CategoryCreateModal({ isOpen, onClose, onSuccess }) {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Create New Category (নতুন ক্যাটাগরি যোগ করুন)"
+      title="Create New Category"
       className="max-w-md"
     >
       <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">

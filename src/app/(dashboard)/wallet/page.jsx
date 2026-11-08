@@ -118,7 +118,7 @@ export default function WalletPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-              E-Revenue & Cash Wallet (আয় ও উত্তোলন)
+              E-Revenue & Cash Wallet
             </h1>
             <Badge variant="success" size="md">
               Active
@@ -138,7 +138,7 @@ export default function WalletPage() {
             className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs font-semibold px-4"
           >
             <Banknote className="h-4 w-4" />
-            <span>Request Withdrawal (টাকা উত্তোলন)</span>
+            <span>Request Withdrawal</span>
           </Button>
 
           <Link href="/team">
@@ -273,7 +273,7 @@ export default function WalletPage() {
           }`}
         >
           <Receipt className="h-4 w-4" />
-          <span>Cash Withdrawals & Slips (উত্তোলন ও রসিদ)</span>
+          <span>Cash Withdrawals & Slips</span>
           <span className="ml-1 px-1.5 py-0.2 rounded-full bg-gray-100 text-gray-700 text-[11px] dark:bg-zinc-800 dark:text-zinc-300">
             {myWithdrawals.length}
           </span>
@@ -288,7 +288,7 @@ export default function WalletPage() {
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
-          <span>Ledger & Commission History (লেনদেন খতিয়ান)</span>
+          <span>Ledger & Commission History</span>
           <span className="ml-1 px-1.5 py-0.2 rounded-full bg-gray-100 text-gray-700 text-[11px] dark:bg-zinc-800 dark:text-zinc-300">
             {transactions.length}
           </span>
@@ -426,7 +426,7 @@ export default function WalletPage() {
                                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold transition-all shadow-2xs dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300"
                               >
                                 <Receipt className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400" />
-                                <span>View Voucher (রসিদ)</span>
+                                <span>View Voucher</span>
                               </button>
                             ) : isPending ? (
                               <span className="text-xs text-amber-600 dark:text-amber-400 font-medium inline-flex items-center gap-1">

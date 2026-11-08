@@ -119,7 +119,7 @@ export default function AdminProductsPage() {
           <ShieldAlert className="h-8 w-8" />
         </div>
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-          Access Restricted (শুধুমাত্র অ্যাডমিন)
+          Access Restricted
         </h2>
         <p className="text-xs text-gray-500 mt-1">
           Only verified company staff and administrators can manage products, packages, and pricing.
@@ -169,7 +169,7 @@ export default function AdminProductsPage() {
                 </span>
               </div>
               <p className="text-xs text-gray-500 dark:text-zinc-400 mt-0.5">
-                Add new products, configure joining packages, adjust MRP/DP, and set commission Point Values (PV).
+                Add new products, configure purchase cost vs sale price, and monitor profit margins distributed through the commission engine.
               </p>
             </div>
           </div>
@@ -336,9 +336,9 @@ export default function AdminProductsPage() {
                 <tr>
                   <th className="py-3 px-4">Item & Code</th>
                   <th className="py-3 px-4">Classification</th>
-                  <th className="py-3 px-4 text-right">Retail MRP</th>
-                  <th className="py-3 px-4 text-right">Member DP</th>
-                  <th className="py-3 px-4 text-right">Point Value (PV)</th>
+                  <th className="py-3 px-4 text-right">Purchase Cost</th>
+                  <th className="py-3 px-4 text-right">Sale Price</th>
+                  <th className="py-3 px-4 text-right">Net Profit / Commission</th>
                   <th className="py-3 px-4 text-center">Stock</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-right">Action</th>
@@ -346,28 +346,48 @@ export default function AdminProductsPage() {
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-zinc-800 text-gray-800 dark:text-zinc-200">
                 {filteredProducts.map((prod) => {
-                  const mrp = Number(prod.mrp || 0);
-                  const dp = Number(prod.dp || 0);
-                  const pv = Number(prod.pv || 0);
-                  const discount = mrp - dp;
+                  const purchase = Number(prod.purchase_price || 0);
+                  const sale = Number(prod.sale_price || prod.dp || 0);
+                  const profit = Number(prod.profit !== undefined ? prod.profit : (prod.pv || Math.max(0, sale - purchase)));
 
                   return (
                     <tr
                       key={prod.id}
                       className="hover:bg-gray-50/70 dark:hover:bg-zinc-800/40 transition-colors"
                     >
-                      {/* Name & SKU */}
+                      {/* Name, Image & SKU */}
                       <td className="py-3 px-4">
-                        <div className="font-bold text-gray-900 dark:text-white text-xs">
-                          {prod.name}
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="font-mono text-[10px] text-gray-400 bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
-                            {prod.sku}
-                          </span>
-                          <span className="text-[10px] text-gray-500">
-                            {prod.category_name || "General"}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 rounded-lg overflow-hidden border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 shrink-0 flex items-center justify-center">
+                            {prod.image_url ? (
+                              <img
+                                src={prod.image_url}
+                                alt={prod.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-gray-400">
+                                {prod.is_package ? (
+                                  <Boxes className="h-5 w-5 text-purple-600" />
+                                ) : (
+                                  <Package className="h-5 w-5 text-gray-500" />
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-bold text-gray-900 dark:text-white text-xs truncate max-w-[200px]">
+                              {prod.name}
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              <span className="font-mono text-[10px] text-gray-400 bg-gray-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded">
+                                {prod.sku}
+                              </span>
+                              <span className="text-[10px] text-gray-500 truncate max-w-[100px]">
+                                {prod.category_name || "General"}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </td>
 
@@ -391,30 +411,25 @@ export default function AdminProductsPage() {
                         )}
                       </td>
 
-                      {/* MRP */}
-                      <td className="py-3 px-4 text-right font-mono text-gray-500 line-through whitespace-nowrap">
-                        ৳{mrp.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      {/* Purchase Cost */}
+                      <td className="py-3 px-4 text-right font-mono text-gray-500 whitespace-nowrap">
+                        ৳{purchase.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </td>
 
-                      {/* DP */}
+                      {/* Sale Price */}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="font-mono font-bold text-blue-600 dark:text-blue-400">
-                          ৳{dp.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          ৳{sale.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </div>
-                        {discount > 0 && (
-                          <span className="text-[10px] text-emerald-600 font-semibold">
-                            Save ৳{discount.toLocaleString()}
-                          </span>
-                        )}
                       </td>
 
-                      {/* PV */}
+                      {/* Profit */}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="font-mono font-black text-emerald-600 dark:text-emerald-400 flex items-center justify-end gap-1">
                           <Sparkles className="h-3 w-3 text-emerald-600" />
-                          <span>৳{pv.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                          <span>৳{profit.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                         </div>
-                        <span className="text-[10px] text-gray-400">100% Commission base</span>
+                        <span className="text-[10px] text-gray-400 font-mono">100% Commission Pool</span>
                       </td>
 
                       {/* Stock */}

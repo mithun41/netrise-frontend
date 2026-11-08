@@ -44,7 +44,7 @@ export default function AdminTopupsPage() {
 
   return (
     <AdminOnly>
-      <PageShell title="E-Wallet Top-ups (টপ-আপ)" description="Check the payment reference first, then approve.">
+      <PageShell title="E-Wallet Top-ups" description="Check the payment reference first, then approve.">
         <ErrorNote message={error || actionError} />
         <ListTable
           columns={columns}

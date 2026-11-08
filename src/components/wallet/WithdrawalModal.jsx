@@ -20,7 +20,7 @@ import { api } from "@/services/api";
 const PAYMENT_METHODS = [
   {
     id: "BKASH",
-    name: "bKash (বিকাশ)",
+    name: "bKash",
     icon: Smartphone,
     desc: "Personal or Merchant Wallet",
     color: "text-pink-600 bg-pink-50 border-pink-200 dark:bg-pink-950/40 dark:border-pink-900/60",
@@ -29,7 +29,7 @@ const PAYMENT_METHODS = [
   },
   {
     id: "NAGAD",
-    name: "Nagad (নগদ)",
+    name: "Nagad",
     icon: Smartphone,
     desc: "Personal or Agent Wallet",
     color: "text-orange-600 bg-orange-50 border-orange-200 dark:bg-orange-950/40 dark:border-orange-900/60",
@@ -38,7 +38,7 @@ const PAYMENT_METHODS = [
   },
   {
     id: "ROCKET",
-    name: "Rocket (রকেট)",
+    name: "Rocket",
     icon: Smartphone,
     desc: "DBBL Rocket Wallet",
     color: "text-purple-600 bg-purple-50 border-purple-200 dark:bg-purple-950/40 dark:border-purple-900/60",
@@ -143,7 +143,7 @@ export default function WithdrawalModal({ isOpen, onClose, availableBalance = 0,
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Request Cash Withdrawal (টাকা উত্তোলন)"
+      title="Request Cash Withdrawal"
       className="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4 text-sm">
@@ -178,7 +178,7 @@ export default function WithdrawalModal({ isOpen, onClose, availableBalance = 0,
         {/* 1. Payment Method Selector */}
         <div>
           <label className="block text-xs font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider mb-2">
-            1. Select Payout Channel (পেমেন্ট মেথড)
+            1. Select Payout Channel
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {PAYMENT_METHODS.map((method) => {
@@ -219,7 +219,7 @@ export default function WithdrawalModal({ isOpen, onClose, availableBalance = 0,
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-bold text-gray-700 dark:text-zinc-300 uppercase tracking-wider">
-              2. Withdrawal Amount (৳ টাকা)
+              2. Withdrawal Amount (৳)
             </label>
             <span className="text-[11px] text-gray-500">Min ৳50.00</span>
           </div>
@@ -262,7 +262,7 @@ export default function WithdrawalModal({ isOpen, onClose, availableBalance = 0,
                 onClick={() => handleQuickAmount("MAX")}
                 className="px-2.5 py-1 text-xs font-bold rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-100/70 dark:bg-emerald-950/60 hover:bg-emerald-200 text-emerald-800 dark:text-emerald-300 transition-colors"
               >
-                Max Balance (সব)
+                Max Balance
               </button>
             )}
           </div>

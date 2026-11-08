@@ -96,7 +96,7 @@ export default function SecureLifePage() {
 
   return (
     <PageShell
-      title="Secure Life (সুরক্ষিত জীবন)"
+      title="Secure Life"
       description="Agent profile, policies and commission requests."
       actions={
         <>

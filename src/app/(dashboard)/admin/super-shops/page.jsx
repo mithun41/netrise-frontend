@@ -82,7 +82,7 @@ export default function AdminSuperShopsPage() {
   return (
     <AdminOnly>
       <PageShell
-        title="Super Shops (সুপার শপ অনুমোদন)"
+        title="Super Shops"
         description="A shop opens only after its documents are uploaded and both sides sign the agreement."
       >
         <ErrorNote message={error} />

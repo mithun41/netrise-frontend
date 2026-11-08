@@ -108,7 +108,7 @@ export default function AdminOrdersPage() {
           <ShieldAlert className="h-8 w-8" />
         </div>
         <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-          Access Restricted (শুধুমাত্র অ্যাডমিন)
+          Access Restricted
         </h2>
         <p className="text-xs text-gray-500 mt-1">
           Only verified administrators and dispatch officers can access warehouse order fulfillment.
@@ -250,7 +250,7 @@ export default function AdminOrdersPage() {
             {stats.delivered}
           </div>
           <span className="text-[10px] text-emerald-600 font-semibold">
-            ৳{stats.total_pv_distributed.toLocaleString()} PV distributed
+            ৳{stats.total_pv_distributed.toLocaleString()} Profit distributed
           </span>
         </div>
       </div>
@@ -321,8 +321,8 @@ export default function AdminOrdersPage() {
                   <th className="py-3 px-4">Recipient & Destination</th>
                   <th className="py-3 px-4">Items Summary</th>
                   <th className="py-3 px-4">Payment</th>
-                  <th className="py-3 px-4 text-right">Payable (DP)</th>
-                  <th className="py-3 px-4 text-right">Commission PV</th>
+                  <th className="py-3 px-4 text-right">Payable</th>
+                  <th className="py-3 px-4 text-right">Net Profit / Commission</th>
                   <th className="py-3 px-4 text-center">Fulfillment Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
@@ -416,10 +416,10 @@ export default function AdminOrdersPage() {
                         ৳{Number(order.total_amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                       </td>
 
-                      {/* Total PV */}
+                      {/* Total Profit */}
                       <td className="py-3 px-4 text-right whitespace-nowrap">
                         <div className="font-mono font-black text-emerald-600 dark:text-emerald-400">
-                          ৳{Number(order.total_pv).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                          ৳{Number(order.total_profit !== undefined ? order.total_profit : order.total_pv).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                         </div>
                         {order.is_commission_distributed ? (
                           <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 flex items-center justify-end gap-0.5">

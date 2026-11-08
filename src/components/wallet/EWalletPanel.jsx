@@ -11,11 +11,11 @@ import { api } from "@/services/api";
 import { formatTaka, statusVariant } from "@/lib/utils";
 
 const PAYMENT_METHODS = [
-  { value: "BKASH", label: "bKash (বিকাশ)" },
-  { value: "NAGAD", label: "Nagad (নগদ)" },
-  { value: "ROCKET", label: "Rocket (রকেট)" },
-  { value: "BANK", label: "Bank Transfer (ব্যাংক)" },
-  { value: "CASH", label: "Cash (ক্যাশ)" },
+  { value: "BKASH", label: "bKash" },
+  { value: "NAGAD", label: "Nagad" },
+  { value: "ROCKET", label: "Rocket" },
+  { value: "BANK", label: "Bank Transfer" },
+  { value: "CASH", label: "Cash" },
 ];
 
 const TOPUP_COLUMNS = [
@@ -49,7 +49,7 @@ export default function EWalletPanel({ wallet, onChanged }) {
           </div>
           <div>
             <div className="text-[11px] font-bold tracking-wider uppercase text-blue-700 dark:text-blue-400">
-              E-Wallet (কেনাকাটার ব্যালেন্স)
+              E-Wallet (Shopping Balance)
             </div>
             <div className="text-2xl font-extrabold text-gray-900 dark:text-white">{formatTaka(wallet?.ewallet_balance)}</div>
           </div>
